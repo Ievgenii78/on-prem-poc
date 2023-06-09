@@ -1,5 +1,0 @@
-subscription_id      = ""
-resource_group_name  = "RG-EUS-SCCSPOC-DEV"
-storage_account_name = "storeusddevops"
-container_name       = "tfstate
-key                  = "azure-sccr.tfstate"
