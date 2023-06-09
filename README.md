@@ -48,7 +48,7 @@ In this project, we have implemented a data processing pipeline that leverages t
 2. Set up the necessary tables and schemas in the Hive Metastore.
 3. Use Trino to query the data stored in the Hive Metastore and retrieve results.
 
-## Steps to execute poc:
+## Steps to execute PoC:
 1. Do 
    ```shell
    docker-compose up -d
