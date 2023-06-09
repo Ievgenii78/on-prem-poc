@@ -5,6 +5,7 @@ Archive of near real-time processing project on Trino. Azure, Kafka, Stabust, an
 In this project, we have implemented a data processing pipeline that leverages the following components:
 - **Apache Kafka on Kubernetes**: This component acts as a distributed streaming platform for ingesting and processing data in real-time. It provides high-throughput, fault-tolerant messaging capabilities.
 - **Trino (formerly known as PrestoSQL)**: Trino is an open-source distributed SQL query engine that enables fast and interactive analysis of data. It allows users to query data from various sources, including Hive Metastore, and retrieve results efficiently.
+- **Hive Metastore**: The Hive Metastore serves as a centralized metadata repository for the pipeline. It stores the schema information and metadata of the data stored in Azure Blob Storage, making it easier to query and analyze the data.
 
 
 # Components
