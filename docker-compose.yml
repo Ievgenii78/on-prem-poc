@@ -1,0 +1,203 @@
+version: '3.7'
+services:
+  zookeeper:
+    image: quay.io/debezium/zookeeper:latest
+    container_name: zookeeper
+    ports:
+      - 2181:2181
+      - 2888:2888
+      - 3888:3888
+    networks:
+      - trino-network
+
+  kafka:
+    image: quay.io/debezium/kafka:latest
+    container_name: kafka
+    ports:
+      - 9092:9092
+    links:
+      - zookeeper
+    environment:
+      ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+    networks:
+      - trino-network
+
+  # mysql:
+  #   image: quay.io/debezium/example-mysql:${DEBEZIUM_VERSION}
+  #   container_name: mysql
+  #   ports:
+  #     - 3306:3306
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: debezium
+  #     MYSQL_USER: mysqluser
+  #     MYSQL_PASSWORD: mysqlpw
+  #     MYSQL_DATABASE: metastore_db
+
+  connect:
+    image: quay.io/debezium/connect:latest
+    container_name: debezium
+    ports:
+      - 8083:8083
+    links:
+      - kafka
+      - mysql
+    environment:
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: 1
+      CONFIG_STORAGE_TOPIC: my_connect_configs
+      OFFSET_STORAGE_TOPIC: my_connect_offsets
+      STATUS_STORAGE_TOPIC: my_connect_statuses
+    networks:
+      - trino-network
+
+  # spark-master:
+  #     image: docker.io/bitnami/spark:3.3
+  #     environment:
+  #       - SPARK_MODE=master
+  #       - SPARK_RPC_AUTHENTICATION_ENABLED=no
+  #       - SPARK_RPC_ENCRYPTION_ENABLED=no
+  #       - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+  #       - SPARK_SSL_ENABLED=no
+  #       - AWS_ACCESS_KEY_ID=minio
+  #       - AWS_SECRET_ACCESS_KEY=minio123
+  #     ports:
+  #       - 8081:8080
+
+  # spark-worker:
+  #   image: docker.io/bitnami/spark:3.3
+  #   environment:
+  #     - SPARK_MODE=worker
+  #     - SPARK_MASTER_URL=spark://spark-master:7077
+  #     - SPARK_WORKER_MEMORY=2G
+  #     - SPARK_WORKER_CORES=1
+  #     - SPARK_RPC_AUTHENTICATION_ENABLED=no
+  #     - SPARK_RPC_ENCRYPTION_ENABLED=no
+  #     - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+  #     - SPARK_SSL_ENABLED=no
+  #     - AWS_ACCESS_KEY_ID=minio
+  #     - AWS_SECRET_ACCESS_KEY=minio123
+  #   links:
+  #     - kafka
+
+  jupyter:
+    image: jupyter/pyspark-notebook
+    container_name: notebook
+    user: root
+    environment:
+      - GRANT_SUDO=yes
+      - JUPYTER_ENABLE_LAB=yes
+      - JUPYTER_TOKEN=mysecret
+      - AWS_ACCESS_KEY_ID=minio
+      - AWS_SECRET_ACCESS_KEY=minio123
+    ports:
+      - "8888:8888"
+    volumes:
+      - notebook:/home/jovyan/work
+      - ./data/notebook:/data
+    networks:
+      - trino-network
+
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 8082:8080
+    depends_on:
+      - kafka
+      - connect
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: debezium
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://connect:8083
+    networks:
+      - trino-network
+
+  trino-coordinator:
+    image: 'trinodb/trino:latest'
+    hostname: trino-coordinator
+    container_name: trino-coordinator
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./etc:/etc/trino
+    networks:
+      - trino-network
+
+  mysql:
+    image: 'mysql:latest'
+    hostname: mysql
+    container_name: mysql
+    ports:
+      - '3306:3306'
+    volumes:
+      - ./mysql/mysql.cnf:/etc/alternatives/my.cnf
+      - ./data/mysql:/data
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_DATABASE: metastore_db
+    networks:
+      - trino-network
+
+  hive-metastore:
+    hostname: hive-metastore
+    image: 'bitsondatadev/hive-metastore:latest'
+    container_name: hive-metastore
+    ports:
+      - '9083:9083' # Metastore Thrift
+    volumes:
+      - ./conf/metastore-site.xml:/opt/apache-hive-metastore-3.0.0-bin/conf/metastore-site.xml:ro
+    environment:
+      METASTORE_DB_HOSTNAME: mysql
+    depends_on:
+      - mysql
+    networks:
+      - trino-network
+
+  minio:
+    hostname: minio
+    image: 'minio/minio:latest'
+    container_name: minio
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - minio-data:/data
+    environment:
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio123
+    command: server /data --console-address ":9001"
+    networks:
+      - trino-network
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: minio-init
+    entrypoint: >
+      /bin/sh -c "
+      mc config host add myminio http://minio:9000 minio minio123;
+      mc rm -r --force myminio/data;
+      mc rm -r --force myminio/warehouse;
+      mc mb myminio/data;
+      mc mb myminio/warehouse;
+      mc policy set public myminio/data;
+      mc policy set public myminio/warehouse;
+      exit 0;
+      "
+    networks:
+      - trino-network
+    depends_on:
+      - minio
+
+volumes:
+  minio-data:
+    driver: local
+  notebook:
+    driver: local
+
+networks:
+  trino-network:
+    driver: bridge
