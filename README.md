@@ -8,13 +8,6 @@ In this project, we have implemented a data processing pipeline that leverages t
 - **Trino (formerly known as PrestoSQL)**: Trino is an open-source distributed SQL query engine that enables fast and interactive analysis of data. It allows users to query data from various sources, including Hive Metastore, and retrieve results efficiently.
 - **Hive Metastore**: The Hive Metastore serves as a centralized metadata repository for the pipeline. It stores the schema information and metadata of the data stored in Azure Blob Storage, making it easier to query and analyze the data.
 
-
-# Components
-[In progress]
-
-# Installation
-[In progress]
-
 # Configuration
 **Apache Kafka on Kubernetes**
   - Deployment Kafka
