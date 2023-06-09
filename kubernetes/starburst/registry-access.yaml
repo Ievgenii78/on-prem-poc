@@ -1,0 +1,5 @@
+registryCredentials:
+  enabled: true
+  registry: harbor.starburstdata.net/starburstdata
+  username: cust-sphera
+  password: e13o11q1mSeEq1Om

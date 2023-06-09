@@ -1,0 +1,38 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: acme
+spec:
+  acme:
+    # You must replace this email address with your own.
+    # Let's Encrypt will use this to contact you about expiring
+    # certificates, and issues related to your account.
+    email: vdanilau@sphera.com
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      # Secret resource that will be used to store the account's private key.
+      name: letsencrypt
+    solvers:
+      - http01:
+          ingress:
+            class: addon-http-application-routing
+            # The cert issuer will deploy pods so this Affinity will ensure they are on the base node group.
+            podTemplate:
+              spec:
+                affinity:
+                  nodeAffinity:
+                    requiredDuringSchedulingIgnoredDuringExecution:
+                      nodeSelectorTerms:
+                      - matchExpressions:
+                        - key: apps
+                          operator: In
+                          values: 
+                          - base
+                # The tollerance in this YAML is specifically for Azure so it could be removed or commented out
+                #    for other clouds. However, it also won't hurt to leave since it is just saying to allow somethign
+                #    if a taint exists and when it doesn't the tollerance does nothing.
+                tolerations:
+                  - key: "kubernetes.azure.com/scalesetpriority"
+                    operator: "Equal"
+                    value: "spot"
+                    effect: "NoSchedule"

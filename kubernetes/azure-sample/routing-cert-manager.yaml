@@ -1,0 +1,59 @@
+# This setting will ensure an external DNS server is used to check for the known existence of the host name A records
+# that are created by external-dns. Cert-manager runs a check to ensure this is done before it will issue a request to
+# letsencrypt for a cert signing.
+podDnsPolicy: "None"
+podDnsConfig:
+  nameservers:
+    - "8.8.8.8"
+    - "1.1.1.1"
+
+# The affinity below will ensure all the pods below are deployed in the base node group.
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: apps
+          operator: In
+          values: 
+          - base
+# The tollerance in this YAML is specifically for Azure so it could be removed or commented out
+#    for other clouds. However, it also won't hurt to leave since it is just saying to allow somethign
+#    if a taint exists and when it doesn't the tollerance does nothing.
+tolerations:
+  - key: "kubernetes.azure.com/scalesetpriority"
+    operator: "Equal"
+    value: "spot"
+    effect: "NoSchedule"
+
+cainjector:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: apps
+            operator: In
+            values: 
+            - base
+  tolerations:
+    - key: "kubernetes.azure.com/scalesetpriority"
+      operator: "Equal"
+      value: "spot"
+      effect: "NoSchedule"
+
+webhook:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: apps
+            operator: In
+            values: 
+            - base
+  tolerations:
+    - key: "kubernetes.azure.com/scalesetpriority"
+      operator: "Equal"
+      value: "spot"
+      effect: "NoSchedule"

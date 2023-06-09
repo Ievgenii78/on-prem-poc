@@ -1,0 +1,18 @@
+catalogs:
+    # tpch-testdata: |
+    #   connector.name=tpch
+    # tmpmemory: |
+    #   connector.name=memory
+    # metrics: |
+    #   connector.name=jmx
+    # clientdb: |
+    #   connector.name=postgresql
+    #   connection-url=jdbc:postgresql://postgresql.example.com:5432/clientdb
+    #   connection-password=${ENV:PSQL_PASSWORD}
+    #   connection-user=${ENV:PSQL_USERNAME}
+    datalake: |
+      connector.name=hive
+      hive.metastore.uri=thrift://hive:9083
+    # s3: |
+    #   connector.name=hive
+    #   hive.metastore=glue

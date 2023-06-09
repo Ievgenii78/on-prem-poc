@@ -1,0 +1,5 @@
+subscription_id      = "3b9aa441-4ced-4007-82a9-b4d4af15d363"
+resource_group_name  = "RG-EUS-SCCSPOC-DEV"
+storage_account_name = "storeusddevopssccr"
+container_name       = "tfstate"
+key                  = "tf-sccr-azure-state/eus-sccr-azure-dev.tfstate"

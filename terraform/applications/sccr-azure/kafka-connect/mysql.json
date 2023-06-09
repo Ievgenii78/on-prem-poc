@@ -1,0 +1,15 @@
+{
+    "name": "classicmodel-connector",
+    "config": {
+       "connector.class": "io.debezium.connector.mysql.MySqlConnector",
+       "database.hostname": "sqlf-eus-sccspoc-dev.mysql.database.azure.com",
+       "database.user": "sccrpocmysql",
+       "database.port": "3306",
+       "database.password": "D4_RR_DQUoE1ir",
+       "database.server.id": "1",
+       "database.server.name": "sqdb-eus-sccspoc-dev",
+       "database.history.kafka.bootstrap.servers": "127.0.0.1:9092",
+       "database.history.kafka.topic": "dbhistory.classicmodels",
+       "include.schema.changes": "true"
+     }
+}

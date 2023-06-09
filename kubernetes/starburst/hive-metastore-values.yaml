@@ -1,0 +1,12 @@
+objectStorage:
+  azure:
+    abfs:
+      authType: "accessKey"
+      accessKey:
+        storageAccount: "miniobucketsphera"
+        accessKey: "5PVx26fRI9k/ssd72tUE10X6cumcpU9tPQVHam02DHj+k5CT+15kH7fKJYkOxh03endm7PJbLN9g+AStbJIY+g=="
+expose:
+  type: "loadBalancer"
+  loadBalancer:
+    annotations:
+      service.beta.kubernetes.io/azure-load-balancer-internal: "true"

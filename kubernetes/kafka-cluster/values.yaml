@@ -1,0 +1,9 @@
+externalAccess:
+  enabled: true
+  autoDiscovery:
+    enabled: true
+  service:
+    annotations:
+      service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+rbac:
+  create: true

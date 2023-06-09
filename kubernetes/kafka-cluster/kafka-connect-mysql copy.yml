@@ -1,0 +1,20 @@
+apiVersion: "kafka.strimzi.io/v1beta2"
+kind: "KafkaConnector"
+metadata:
+  name: "debezium-connector-mysql"
+  labels:
+    strimzi.io/cluster: "debezium-connect-cluster"
+spec:
+  class: "io.debezium.connector.mysql.MySqlConnector"
+  tasksMax: 1
+  config:
+    database.hostname: "sqlf-eus-sccspoc-dev.mysql.database.azure.com"
+    database.port: "3306"   
+    # database.user: "${secrets:debezium-example/debezium-secret:username}"   
+    database.user: "${file:/opt/kafka/external-configuration/connector-config/debezium-mysql-credentials.properties:mysql_username}"   
+    # database.password: "${secrets:debezium-example/debezium-secret:password}"   
+    database.password: "${file:/opt/kafka/external-configuration/connector-config/debezium-mysql-credentials.properties:mysql_password}"
+    database.server.id: "546566157"
+    database.server.name: "sqlf-eus-sccspoc-dev"
+    database.history.kafka.topic: "connect-cluster-status-history"
+    database.history.kafka.bootstrap.servers: "kafka-cluster:9092"
