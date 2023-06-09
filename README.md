@@ -1,5 +1,5 @@
 # Introduction 
-PoC for the near real-time processing pipeline project on Trino. For Data Processing we utilize MySQL which sets up connection with Kafka. The data is streamed from MySQL to Kafka with Apache Spark and Jupyter, after that we stream data from Kafka to console into Delta Lake. Additionally we utilize Power BI connected to Presto, and Hive Metastore for Data Governance. In this PoC we will see how to query delta tables in Presto. We are using Trino which is another flavour of Presto.
+PoC for the near real-time processing pipeline project on Trino. For Data Processing we utilize MySQL which sets up connection with Kafka. The data is streamed from MySQL to Kafka with Apache Spark and Jupyter, after that we stream data from Kafka into Delta Lake. Additionally we utilize Power BI connected to Presto, and Hive Metastore for Data Governance. In this PoC we will see how to query delta tables in Presto. We are using Trino which is another flavour of Presto.
 
 # Steps to execute PoC:
 1. Do 
