@@ -1,5 +1,5 @@
 # Introduction 
-Archive of near real-time processing project on Trino. Azure, Kafka, Stabust, and TrinoDB are deployed with Kubernetes. In this poc we will see how to query delta tables in presto. We are using trino which is another flavour of presto.
+Archive of near real-time processing project on Trino. Azure, Kafka, Stabust, and TrinoDB are deployed with Kubernetes. In this PoC we will see how to query delta tables in Presto. We are using Trino which is another flavour of Presto.
 
 # Pipeline Overview
 In this project, we have implemented a data processing pipeline that leverages the following components:
